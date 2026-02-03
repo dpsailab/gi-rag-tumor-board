@@ -2,8 +2,8 @@
 
 Retrieval-Augmented Generation framework for gastrointestinal oncology tumor board decision support
 
-This repository accompanies the manuscript:
-"Toward AI Tumor Boards: Retrieval-Augmented Generation Improves Concordance in Gastrointestinal Oncology".
+This repository accompanies the submitted manuscript:
+"[Title under submission]".
 
 ## Purpose
 
