@@ -3,7 +3,7 @@
 Retrieval-Augmented Generation framework for gastrointestinal oncology tumor board decision support
 
 This repository accompanies the submitted manuscript:
-"[Title under submission]".
+"Systematic Evaluation of Multilingual Retrieval-Augmented Generation for Gastrointestinal Tumor Board Decision Support".
 
 ## Purpose
 
@@ -67,6 +67,12 @@ You can run any of the three pipelines (framework_1, framework_2, framework_3) o
 
 This code is for research purposes only and is not intended for clinical use.
 
+
+## Citation
+
+If you use this repository, please cite:
+
+Zenodo DOI: [![DOI](https://zenodo.org/badge/1148780239.svg)](https://doi.org/10.5281/zenodo.18483659)
 
 ---
 
