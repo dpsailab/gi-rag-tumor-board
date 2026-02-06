@@ -10,7 +10,7 @@ Both MDT and AI recommendations were independently classified by two blinded
 board clinicians into one of the following **nine therapeutic categories**:
 
 1. **Best Supportive Care**  
-2. **Further Diagnostics**  
+2. **Further diagnostic procedures (without subsequent therapy plan)**  
 3. **Endoscopic Intervention** (e.g., endoscopic resection)  
 4. **Active Surveillance or Follow-up**  
 5. **Multimodal Therapy**  
