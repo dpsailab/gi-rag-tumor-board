@@ -5,9 +5,10 @@ Retrieval-Augmented Generation framework for gastrointestinal oncology tumor boa
 This repository accompanies the submitted manuscript:
 "Systematic Evaluation of Multilingual Retrieval-Augmented Generation for Gastrointestinal Tumor Board Decision Support".
 
+
 ## Purpose
 
-This repository provides full transparency of the methodological framework, prompting strategies, and retrieval pipelines used in the study.
+This repository provides full transparency of the methodological framework, prompting strategies, retrieval pipelines, and analysis workflows used in the study.
 
 Note: Due to patient privacy regulations and copyright restrictions, no real patient data or guideline documents are included.
 
@@ -16,8 +17,11 @@ Note: Due to patient privacy regulations and copyright restrictions, no real pat
 
 | Folder / File           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `analysis` | Contains simplified and self-contained scripts reproducing the statistical analyses, tables, and figures reported in the manuscript (including concordance, retrieval overlap, and demographic analyses). |
+
 | `config`                | Contains hyperparameter files (`hyperparameters.yaml`) for experimental setups.                                                                                                                                                                                                                                                                                                                                                             |
-| `data`                  | Contains **dummy patient cases** (`dummy_patients/`) and **synthetic guideline corpora** (`dummy_corpora/`), plus the guideline dictionary (`guideline_dictionary_dummy.py`).                                                                                                                                                                                                                                                                                   |
+| `data` | Contains the **anonymized study dataset** used for the analyses (fully privacy-preserving), as well as **dummy patient cases** (`dummy_patients/`) and **synthetic guideline corpora** (`dummy_corpora/`) for pipeline execution and testing. |
+                                                                                                                                                                                                                                                                                  
 | `experiments`           | Includes configuration matrices and evaluation documentation for reproducing the 16 experimental setups (`configuration_matrix.yaml`, `evaluation.md`).                                                                                                                                                                                                                                                                                                                        |
 | `guidelines processing` | Contains scripts for processing guidelines, chunking PDFs, and generating JSON corpora.                                                                                                                                                                                                                                                                                                                                                     |
 | `pipelines`             | All pipeline scripts: <br>- `framework_1_simple_request.py` – runs a single request prompt on a patient case <br>- `framework_2_chatgpt_assistant.py` – runs an assistant-style prompt using a pre-configured ChatGPT Assistant <br>- `framework_3_RAG.py` – executes the custom RAG pipeline <br>- `rewrite.py` – rewrites patient cases into structured guideline-style format <br>- `embeddings.py` – embeds patient cases for retrieval |
@@ -31,13 +35,19 @@ Note: Due to patient privacy regulations and copyright restrictions, no real pat
 
 ## Reproducibility
 
-The repository enables methodological replication of the study design and prompt engineering strategies. Synthetic data demonstrate end-to-end execution of the pipelines.
+The repository enables methodological and analytical replication of the study design.  
+Synthetic data demonstrate end-to-end execution of the pipelines, while the anonymized dataset and analysis scripts allow reproduction of all reported results.
+
 
 - Dummy patient cases: data/dummy_patients/
 
 - Dummy guideline corpora: data/dummy_corpora/
 
 - Experimental configuration: experiments/configuration_matrix.yaml
+- Anonymized study dataset: data/
+
+- Statistical analysis scripts reproducing tables and figures: analysis/
+
 
 You can run any of the three pipelines (framework_1, framework_2, framework_3) on the dummy data to reproduce retrieval, embedding, and RAG outputs.
 
@@ -53,10 +63,14 @@ You can run any of the three pipelines (framework_1, framework_2, framework_3) o
 - Configuration matrix for the 16 experimental setups
 
 - Retrieval and RAG orchestration logic
+- Anonymized dataset used for all analyses reported in the manuscript
+
+- Analysis scripts reproducing statistical results, tables, and figures
+
 
 ## What is Not Included
 
-- Real patient-level clinical data
+- Identifiable or reconstructable patient-level clinical data
 
 - Guideline texts (German S3, NCCN)
 
