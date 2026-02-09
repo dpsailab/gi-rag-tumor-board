@@ -86,8 +86,8 @@ The classification rules used to derive `_treatment` columns are documented in:
 |------|-------------|
 | `Chunk Indices_RAG Full Corpora` | Indices of retrieved chunks for RAG with full corpora |
 | `Chunk Indices_RAG Selected Corpora` | Indices of retrieved chunks for RAG with selected corpora |
-| `Chunk Indices_rw_RAG Full Corpora` | Indices for rewritten queries with full corpora |
-| `Chunk Indices_rw_RAG Selected Corpora` | Indices for rewritten queries with selected corpora |
+| `Chunk Indices_rw_RAG Full Corpora` | Indices of retrieved chunks for rewritten queries and RAG w/ full corpora |
+| `Chunk Indices_rw_RAG Selected Corpora` | Indices of retrieved chunks for rewritten queries and RAG w/ selected corpora |
 
 These columns enable **Jaccard similarity analyses** between retrieval strategies  
 (see `../analysis/analysis.py`).
@@ -98,12 +98,13 @@ These columns enable **Jaccard similarity analyses** between retrieval strategie
 
 | Column | Description |
 |------|-------------|
-| `Charts N_RAG Full Corpora` | Number of retrieved chunks containing chart information |
+| `Charts N_RAG Full Corpora` | Number of retrieved chunks containing chart information for RAG with full corpora |
 | `Charts N_RAG Selected Corpora` | Same for selected corpora |
-| `Charts N_rw_RAG Full Corpora` | Same for rewritten queries |
-| `Charts N_rw_RAG Selected Corpora` | Same for rewritten queries with selected corpora |
+| `Charts N_rw_RAG Full Corpora` | Same for rewritten queries and RAG with full corpora |
+| `Charts N_rw_RAG Selected Corpora` | Same for rewritten queries and RAG with selected corpora |
 
 These columns are used to quantify **retrieval behavior and evidence exposure** across RAG configurations.
+(see `../analysis/analysis.py`).
 
 ---
 
