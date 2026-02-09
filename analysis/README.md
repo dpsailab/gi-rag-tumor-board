@@ -1,6 +1,6 @@
 # Analysis Scripts – Reproducible Analyses
 
-This folder contains the scripts used to reproduce the analyses presented in the manuscript. These are simplified scripts intended to allow full reproducibility of all reported results.
+This folder contains the scripts used to reproduce the analyses presented in the manuscript. These are simplified scripts intended to allow full reproducibility of the reported results.
 
 ## Scripts
 
