@@ -46,8 +46,8 @@ Performs the main evaluation of frameworks' recommendations against the anonymiz
 ```
 2. Run the scripts:  
 ```bash
-python analysis.py
 python demographics.py
+python analysis.py
 ```
 3. Results (tables and figures) will be saved in tables/ and img/ folders.
 
