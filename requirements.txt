@@ -1,18 +1,38 @@
+# =========================
 # Core
+# =========================
 numpy==1.24.4
 pandas==2.0.3
 
+# =========================
 # LLM API
+# =========================
 openai==1.109.1
 
+# =========================
 # LlamaIndex core
+# =========================
 llama-index==0.11.23
 
+# =========================
 # Embeddings
+# =========================
 llama-index-embeddings-huggingface==0.2.0
 sentence-transformers<3
 
+# =========================
 # PDF / text ingestion
+# =========================
 pymupdf4llm==0.0.17
 PyMuPDF==1.24.11
+
+# =========================
+# Statistics & plotting
+# =========================
+matplotlib==3.7.5
+seaborn==0.13.2
+scipy==1.10.1
+statsmodels==0.14.1
+
+
 
