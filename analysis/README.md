@@ -13,7 +13,7 @@ Performs demographic analyses of the anonymized dataset:
 
 **Outputs:**
 
-- **Tables**: CSVs of age, gender, and presentation statistics saved in `tables/` for use in manuscript and supplementary material  
+- **Tables**: CSVs of age, gender, and presentation statistics saved in `tables/`  
 
 ---
 
