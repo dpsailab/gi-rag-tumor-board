@@ -4,7 +4,20 @@ This folder contains the scripts used to reproduce the analyses presented in the
 
 ## Scripts
 
-### 1. `analysis.py`
+### 1. `demographics.py`
+Performs demographic analyses of the anonymized dataset:
+
+- **Age statistics**: median and interquartile range (overall and by tumor type)  
+- **Gender distribution**: counts and percentages (overall and by tumor type)  
+- **Presentation status**: first vs. follow-up presentation (overall and by tumor type)  
+
+**Outputs:**
+
+- **Tables**: CSVs of age, gender, and presentation statistics saved in `tables/` for use in manuscript and supplementary material  
+
+---
+
+### 2. `analysis.py`
 Performs the main evaluation of model recommendations against the anonymized tumor board dataset. The key analyses include:
 
 - **Overall correctness** of each model (`calculate_correct_percentages`, `calculate_correct_counts`)  
@@ -24,18 +37,7 @@ Performs the main evaluation of model recommendations against the anonymized tum
 
 ---
 
-### 2. `demographics.py`
-Performs demographic analyses of the anonymized dataset:
 
-- **Age statistics**: median and interquartile range (overall and by tumor type)  
-- **Gender distribution**: counts and percentages (overall and by tumor type)  
-- **Presentation status**: first vs. follow-up presentation (overall and by tumor type)  
-
-**Outputs:**
-
-- **Tables**: CSVs of age, gender, and presentation statistics saved in `tables/` for use in manuscript and supplementary material  
-
----
 
 ## Usage
 
