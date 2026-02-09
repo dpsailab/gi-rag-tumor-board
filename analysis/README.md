@@ -18,10 +18,10 @@ Performs demographic analyses of the anonymized dataset:
 ---
 
 ### 2. `analysis.py`
-Performs the main evaluation of model recommendations against the anonymized tumor board dataset. The key analyses include:
+Performs the main evaluation of frameworks' recommendations against the anonymized tumor board dataset. The key analyses include:
 
-- **Overall correctness** of each model (`calculate_correct_percentages`, `calculate_correct_counts`)  
-- **Agreement with tumor board** including 95% confidence intervals (`compute_overall_agreement_with_CI`)  
+- **Overall concordance** of each framework (`calculate_correct_percentages`, `calculate_correct_counts`)  
+- **Concordance with tumor board** including 95% confidence intervals (`compute_overall_agreement_with_CI`)  
 - **Statistical testing**: Cochran’s Q test and pairwise McNemar tests  
 - **McNemar power analysis** and visualization as a heatmap  
 - **Extreme correctness analysis**: identifies cases that are always wrong, mostly right (>90%), or always right (100%)  
@@ -36,7 +36,6 @@ Performs the main evaluation of model recommendations against the anonymized tum
 - **Subsets**: CSVs of always wrong, mostly right, and always right cases  
 
 ---
-
 
 
 ## Usage
