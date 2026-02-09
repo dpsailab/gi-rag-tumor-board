@@ -1,6 +1,6 @@
 # Anonymized Dataset
 
-This folder contains the anonymized dataset used for all analyses reported in the manuscript.  
+This folder contains the anonymized dataset used for the analyses reported in the manuscript.  
 The dataset is provided **exclusively for reproducibility of the published results**.
 
 Due to data protection and ethical constraints, the original clinical cases and full tumor board recommendations **cannot be shared**.
