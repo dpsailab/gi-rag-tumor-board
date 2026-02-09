@@ -28,7 +28,7 @@ All patient-identifying information and clinically reconstructable details have 
 | `presentation` | Presentation type (1 = first presentation, 2 = follow-up) |
 | `age` | Patient age at presentation |
 | `gender` | Patient gender (f = female, m = male) |
-| `tumour_type` | Tumor entity (e.g. colorectal, gastric, pancreatic, etc.) |
+| `tumour_type` | Tumor entity (esophageal, gastric, pancreatic,colorectal and hepatobiliary) |
 
 ---
 
