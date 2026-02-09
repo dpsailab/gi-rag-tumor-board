@@ -27,7 +27,7 @@ All patient-identifying information and clinically reconstructable details have 
 | `case_nr` | Anonymous case identifier |
 | `presentation` | Presentation type (1 = first presentation, 2 = follow-up) |
 | `age` | Patient age at presentation |
-| `gender` | Patient gender |
+| `gender` | Patient gender (f = female, m = male) |
 | `tumour_type` | Tumor entity (e.g. colorectal, gastric, pancreatic, etc.) |
 
 ---
