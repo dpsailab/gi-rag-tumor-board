@@ -26,7 +26,7 @@ from chatgpt import chatgpt_chat_completion
 # -----------------------------
 # Main function
 # -----------------------------
-def rewrite_case_from_txt(txt_path: str, model: str = "gpt-4o-mini") -> str:
+def rewrite_case_from_txt(txt_path: str, model: str = "gpt-4o-mini-2024-07-18") -> str:
     """
     Rewrites a patient case from a TXT file using a guideline-style prompt.
 
