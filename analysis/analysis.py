@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2, norm
 from statsmodels.stats.proportion import proportion_confint
+import ast
+
 
 # =========================
 # Paths & global settings
@@ -65,9 +67,12 @@ def load_data(path: str) -> pd.DataFrame:
 
     The 'anonymized_tumorboard_recommedation_treatment' column is expected to contain lists.
     """
+
+
     df = pd.read_csv(path, converters={
-        "anonymized_tumorboard_recommedation_treatment": lambda x: eval(x) if pd.notna(x) else []
+        "anonymized_tumorboard_recommedation_treatment": lambda x: ast.literal_eval(x) if pd.notna(x) else []
     })
+
     print(f"Loaded dataset with {len(df)} cases")
     return df
 
@@ -111,6 +116,64 @@ def compute_overall_agreement_with_CI(df: pd.DataFrame, model_cols: list, alpha=
         print(f"Saved overall agreement with 95% CI to {save_path}")
 
     return results
+
+
+# =========================
+# Sub-analysis with 95% CI per categorical column
+# =========================
+def sub_analysis_with_CI(df: pd.DataFrame, category_col: str, model_cols: list, rename_dict=None, alpha=0.05,
+                         save_dir=None):
+    """
+    Compute agreement percentages and 95% confidence intervals per value of a categorical column.
+
+    Parameters:
+    - df: pandas DataFrame
+    - category_col: column name to group by (e.g., 'tumour_type', 'presentation')
+    - model_cols: list of model columns (without _treatment_concordance suffix)
+    - rename_dict: optional dict to map column names to nicer labels
+    - alpha: significance level for CI (default 0.05)
+    - save_dir: if specified, save CSVs for each category
+
+    Returns:
+    - results_dict: nested dictionary {category_value: {model_col: {"percent":..., "ci_lower":..., "ci_upper":...}}}
+    """
+    from statsmodels.stats.proportion import proportion_confint
+    import os
+
+    z = norm.ppf(1 - alpha / 2)
+    results_dict = {}
+    categories = df[category_col].unique()
+
+    if save_dir:
+        os.makedirs(save_dir, exist_ok=True)
+
+    print(f"\n=== 95% CI per {category_col} ===")
+    for cat in categories:
+        df_sub = df[df[category_col] == cat]
+        n = len(df_sub)
+        print(f"\n{category_col}: {VALUE_RENAME.get(cat, cat)} (N={n})")
+        results_dict[cat] = {}
+
+        for col in model_cols:
+            correct = df_sub[f"{col}_treatment_concordance"].sum()
+            p = correct / n if n > 0 else 0
+            # Wilson confidence interval using statsmodels
+            ci_low, ci_up = proportion_confint(count=correct, nobs=n, alpha=alpha, method='wilson') if n > 0 else (0, 0)
+
+            results_dict[cat][col] = {"percent": p * 100, "ci_lower": ci_low * 100, "ci_upper": ci_up * 100}
+
+            label = rename_dict[col] if rename_dict and col in rename_dict else col
+            print(f"{label}: {p * 100:.2f}% ({correct}/{n}), 95% CI: {ci_low * 100:.2f}% - {ci_up * 100:.2f}%")
+
+        # Optionally save CSV for this category
+        if save_dir:
+            df_cat = pd.DataFrame.from_dict(results_dict[cat], orient='index')
+            save_path = os.path.join(save_dir, f"{category_col}_{cat}_CI.csv")
+            df_cat.to_csv(save_path)
+            print(f"Saved 95% CI table to {save_path}")
+
+    return results_dict
+
 
 # =========================
 # Statistical tests
@@ -301,7 +364,7 @@ def analyze_jaccard_similarity(df: pd.DataFrame, save_dir="tables"):
     4. Saves per-case similarities and average matrix as CSVs.
     5. Plots heatmaps (optional).
 
-    Expects columns (renamed version):
+    Expects columns:
         'Chunk Indices_RAG Full Corpora',
         'Chunk Indices_RAG Selected Corpora',
         'Chunk Indices_rw_RAG Full Corpora',
@@ -450,6 +513,26 @@ if __name__ == "__main__":
 
     # Overall agreement with 95% CI
     overall_ci = compute_overall_agreement_with_CI(df, MODEL_COLS, alpha=0.05, save_dir=TABLE_DIR)
+
+    # Sub-analysis with 95% CI per tumor type
+    ci_results_tumor = sub_analysis_with_CI(
+        df,
+        category_col="tumour_type",
+        model_cols=MODEL_COLS,
+        rename_dict=VALUE_RENAME,
+        alpha=0.05,
+        save_dir=TABLE_DIR
+    )
+
+    # Sub-analysis with 95% CI per presentation
+    ci_results_presentation = sub_analysis_with_CI(
+        df,
+        category_col="presentation",
+        model_cols=MODEL_COLS,
+        rename_dict=VALUE_RENAME,
+        alpha=0.05,
+        save_dir=TABLE_DIR
+    )
 
     # Cochran Q + pairwise McNemar
     print("\n=== Cochran's Q Test ===")
