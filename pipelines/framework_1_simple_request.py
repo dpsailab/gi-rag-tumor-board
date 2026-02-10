@@ -35,7 +35,7 @@ print("Select model (1 or 2):")
 print("1) gpt-4o-mini")
 print("2) gpt-4o")
 model_choice = input("Enter choice [1 or 2]: ").strip()
-MODEL_NAME = "gpt-4o-mini" if model_choice == "1" else "gpt-4o"
+MODEL_NAME = "gpt-4o-mini-2024-07-18" if model_choice == "1" else "gpt-4o-2024-11-20" 
 
 use_rewritten = input("Use rewritten case? (y/n): ").strip().lower() == "y"
 
