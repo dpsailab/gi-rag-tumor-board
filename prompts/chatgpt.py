@@ -59,7 +59,7 @@ def chatgpt_chat_completion(prompt_text: str, model: str) -> str:
                 "content": prompt_text,
             }
         ],
-        temperature=0.8,
+        temperature=0.2,
         top_p=1.0,
     )
 
