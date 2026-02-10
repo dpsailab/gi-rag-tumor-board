@@ -107,7 +107,7 @@ if __name__ == "__main__":
     print("1) gpt-4o-mini")
     print("2) gpt-4o")
     model_choice = input("Enter choice [1 or 2]: ").strip()
-    MODEL_NAME = "gpt-4o" if model_choice == "2" else "gpt-4o-mini"
+    MODEL_NAME = "gpt-4o-mini-2024-07-18" if model_choice == "1" else "gpt-4o-2024-11-20" 
     print('\nSelected model: {}\n'.format(MODEL_NAME))
 
 
