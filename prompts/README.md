@@ -169,7 +169,7 @@ The 16 experimental configurations combine:
 
 ## Implementation Notes
 
-- **Temperature:** 0.8 (balances determinism with exploration)
+- **Temperature:** 0.2 (low randomness)
 - **Top P:** 1.0 (full probability distribution)
 - **Language:** Prompts explicitly request German output to match tumor board format in the paper
 - **Fragestellung:** German term for "clinical question" - many tumor board reports include explicit questions
