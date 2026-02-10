@@ -1,12 +1,11 @@
 # OpenAI API Configuration
 model:
-  gpt_4o: "gpt-4o-2024-08-06"
-  gpt_4o_mini: "gpt-4o-mini-2024-07-18"
+  gpt_4o: "gpt-4o"
+  gpt_4o_mini: "gpt-4o-mini"
 
 api_parameters:
-  temperature: 0.8
+  temperature: 0.2
   top_p: 1.0
-  max_tokens: 300
 
 # Embedding Configuration
 embedding:
