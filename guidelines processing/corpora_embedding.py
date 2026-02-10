@@ -8,7 +8,8 @@ from llama_index.core import Settings, Document
 # 1. Load embedding model
 # -------------------------------
 embed_model = Settings.embed_model = HuggingFaceEmbedding(
-    model_name="BAAI/bge-m3"
+    model_name="BAAI/bge-m3",
+    model_kwargs={"revision": "5617a9f"}  # pin to exact commit
 )
 print("Embedding model loaded!")
 
