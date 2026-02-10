@@ -10,7 +10,7 @@ api_parameters:
 # Embedding Configuration
 embedding:
   model: "BAAI/bge-m3"
-  version: "1.0.0"
+  version: "commit 5617a9f (Jul 3, 2024)"
   
 # RAG Configuration
 retrieval:
