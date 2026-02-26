@@ -41,8 +41,8 @@ The dominant therapeutic intent determined the classification. Recommendations a
 - Dominant therapeutic intent guides classification: supportive or diagnostic measures **do not** change the primary category.  
 - This rule is particularly important for **Multistep Therapy**, where concordance was considered even if only the **first therapeutic step** matched the tumor board recommendation.
 
-
 For multistep therapeutic recommendations, concordance was considered if the LLM matched at least the first planned therapeutic step. This approach reflects the clinical relevance of partial agreement in sequential therapy plans and ensures that early-stage alignment is captured in evaluation metrics.
+
 ---
 
 ## Examples of Classification
