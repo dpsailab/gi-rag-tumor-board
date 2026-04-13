@@ -28,6 +28,27 @@ Clinical case: {original_case}"""
 
 
 # =============================================================================
+# PROMPT TYPE 1b: TRANSLATE ONLY PROMPT
+# =============================================================================
+
+TRANSLATING_PROMPT = """Translate the following clinical case from German into English.
+
+Requirements:
+- Preserve the original structure exactly (paragraphs, headings, bullet points, numbering).
+- Do not add, remove, or reorder any information.
+- Translate all narrative text into clear medical English.
+- Keep medical terminology, abbreviations, drug names, and laboratory values unchanged unless a direct translation is required for understanding.
+- Do not improve, summarize, or rephrase beyond translation.
+- Maintain a formal clinical tone.
+
+Return only the translated case, without any additional commentary or explanation.
+
+#########
+
+Clinical case in German: {original_case}"""
+
+
+# =============================================================================
 # PROMPT TYPE 2: SIMPLE REQUEST (NO RETRIEVAL)
 # =============================================================================
 
