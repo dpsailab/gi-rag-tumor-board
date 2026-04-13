@@ -107,13 +107,29 @@ if __name__ == "__main__":
     print("1) gpt-4o-mini")
     print("2) gpt-4o")
     model_choice = input("Enter choice [1 or 2]: ").strip()
-    MODEL_NAME = "gpt-4o-mini-2024-07-18" if model_choice == "1" else "gpt-4o-2024-11-20" 
+    MODEL_NAME = "gpt-4o-mini-2024-07-18" if model_choice == "1" else "gpt-4o-2024-11-20"
     print('\nSelected model: {}\n'.format(MODEL_NAME))
 
 
-    # Optional rewriting
-    use_rewritten = input("Use rewritten case? (y/n): ").strip().lower() == "y"
+    # Optional rewriting or translating only
+    use_rewritten = input("Use rewritten or translated only case? (y/n): ").strip().lower() == "y"
+
     if use_rewritten:
+        use_translated_only = input(
+            "Do you want to use the translated (tr) only case or the rewritten (rw) one? (tr/rw): ").strip().lower() == "tr"
+    else:
+        use_translated_only = False
+
+    if use_translated_only:
+        try:
+            from rewrite import translate_case_from_txt
+
+            case_text = translate_case_from_txt(CASE_PATH)
+            print("\n=== Using translated only case ===\n")
+        except ImportError:
+            print("WARNING: Translate function not found. Using original case.\n")
+
+    elif use_rewritten:
         try:
             from rewrite import rewrite_case_from_txt
             case_text = rewrite_case_from_txt(CASE_PATH)
