@@ -319,6 +319,223 @@ def analyze_correctness_extremes(df: pd.DataFrame, model_cols: list, comparison_
 
 
 # =========================
+# Secondary Matching Analysis
+# =========================
+# INSERT THIS FUNCTION after analyze_correctness_extremes() and before the
+# Visualization functions section (around line 200 in the original file).
+#
+# Then in __main__, insert the call AFTER analyze_correctness_extremes():
+#
+#   secondary_results = analyze_secondary_matching(df, MODEL_COLS, save_dir=TABLE_DIR)
+#
+# =========================
+
+def analyze_secondary_matching(df: pd.DataFrame, model_cols: list, save_dir="tables"):
+    """
+    Quantify how often concordance was achieved via the secondary MDT option
+    (liberal matching rule) rather than the primary recommendation.
+
+    For each concordant case (treatment_concordance == 1), checks whether
+    the model's treatment output matches only the second element of
+    anonymized_tumorboard_recommedation_treatment (i.e., primary match failed,
+    secondary match succeeded).
+
+    Also counts:
+        - Total cases with two MDT options (list length > 1)
+        - Cases where secondary matching was the only path to concordance
+        - Breakdown by tumour_type
+
+    Expects columns:
+        - 'anonymized_tumorboard_recommedation_treatment': list of strings, e.g. ['Multistep', 'Multimodal']
+        - f'{col}_treatment': model output treatment string
+        - f'{col}_treatment_concordance': 1 if concordant, 0 if not
+        - 'tumour_type': cancer type string
+
+    Parameters:
+        df        : main dataframe
+        model_cols: list of model column name prefixes (MODEL_COLS)
+        save_dir  : directory to save CSV outputs
+
+    Returns:
+        summary_df : per-model summary of secondary matching counts
+        detail_df  : per-case detail of secondary matching flags
+    """
+
+    import ast
+    import os
+    import pandas as pd
+
+    os.makedirs(save_dir, exist_ok=True)
+
+    # ------------------------------------------------------------------
+    # Step 1: Parse MDT treatment lists
+    # ------------------------------------------------------------------
+    def parse_list(x):
+        if isinstance(x, list):
+            return x
+        if pd.isna(x) or x == "":
+            return []
+        try:
+            parsed = ast.literal_eval(x)
+            return parsed if isinstance(parsed, list) else [parsed]
+        except Exception:
+            return [str(x)]
+
+    df["_mdt_treatment_list"] = df["anonymized_tumorboard_recommedation_treatment"].apply(parse_list)
+
+    # ------------------------------------------------------------------
+    # Step 2: Count cases with two MDT options
+    # ------------------------------------------------------------------
+    df["_mdt_has_two_options"] = df["_mdt_treatment_list"].apply(lambda x: len(x) > 1)
+    n_two_options = df["_mdt_has_two_options"].sum()
+    n_one_option  = (~df["_mdt_has_two_options"]).sum()
+
+    print("\n=== MDT Treatment Options Distribution ===")
+    print(f"  Cases with 1 MDT option : {n_one_option} ({n_one_option/len(df)*100:.1f}%)")
+    print(f"  Cases with 2 MDT options: {n_two_options} ({n_two_options/len(df)*100:.1f}%)")
+    print(f"  Total cases             : {len(df)}")
+
+    # Breakdown of first and second elements where two options exist
+    two_option_df = df[df["_mdt_has_two_options"]].copy()
+    two_option_df["_mdt_first"]  = two_option_df["_mdt_treatment_list"].apply(lambda x: x[0] if len(x) > 0 else None)
+    two_option_df["_mdt_second"] = two_option_df["_mdt_treatment_list"].apply(lambda x: x[1] if len(x) > 1 else None)
+
+    print("\n=== First MDT option distribution (cases with 2 options) ===")
+    print(two_option_df["_mdt_first"].value_counts().to_string())
+
+    print("\n=== Second MDT option distribution (cases with 2 options) ===")
+    print(two_option_df["_mdt_second"].value_counts().to_string())
+
+    # Save distribution
+    dist_df = pd.DataFrame({
+        "first_option_counts":  two_option_df["_mdt_first"].value_counts(),
+        "second_option_counts": two_option_df["_mdt_second"].value_counts()
+    }).fillna(0).astype(int)
+    dist_df.to_csv(os.path.join(save_dir, "mdt_two_option_distribution.csv"))
+    print(f"\nTwo-option distribution saved.")
+
+    # ------------------------------------------------------------------
+    # Step 3: Per-model secondary matching detection
+    # ------------------------------------------------------------------
+    # For each concordant case, check if model output matches ONLY the
+    # second MDT option (i.e., would NOT be concordant under strict
+    # primary-only matching).
+
+    secondary_flags = {}   # col -> boolean Series (True = secondary match only)
+
+    for col in model_cols:
+        treatment_col     = f"{col}_treatment"
+        concordance_col   = f"{col}_treatment_concordance"
+
+        if treatment_col not in df.columns or concordance_col not in df.columns:
+            print(f"  WARNING: columns missing for {col}, skipping.")
+            continue
+
+        def is_secondary_only(row):
+            """
+            Returns True only if:
+              - concordance == 1 (case is concordant)
+              - MDT has 2 options
+              - model output does NOT match the first MDT option
+              - model output DOES match the second MDT option
+            """
+            if row[concordance_col] != 1:
+                return False
+            mdt_list = row["_mdt_treatment_list"]
+            if len(mdt_list) < 2:
+                return False
+            model_val = str(row[treatment_col]).strip().lower()
+            primary   = str(mdt_list[0]).strip().lower()
+            secondary = str(mdt_list[1]).strip().lower()
+            matches_primary   = (model_val == primary)
+            matches_secondary = (model_val == secondary)
+            return (not matches_primary) and matches_secondary
+
+        secondary_flags[col] = df.apply(is_secondary_only, axis=1)
+
+    # ------------------------------------------------------------------
+    # Step 4: Summary table per model
+    # ------------------------------------------------------------------
+    rows = []
+    for col in model_cols:
+        if col not in secondary_flags:
+            continue
+        flag_series    = secondary_flags[col]
+        concordance_col = f"{col}_treatment_concordance"
+
+        n_concordant        = df[concordance_col].sum()
+        n_secondary_only    = flag_series.sum()
+        pct_of_concordant   = (n_secondary_only / n_concordant * 100) if n_concordant > 0 else 0
+        pct_of_total        = (n_secondary_only / len(df) * 100)
+
+        rows.append({
+            "model":                    col,
+            "n_concordant":             n_concordant,
+            "n_secondary_match_only":   n_secondary_only,
+            "pct_of_concordant":        round(pct_of_concordant, 1),
+            "pct_of_total_100":         round(pct_of_total, 1),
+        })
+
+    summary_df = pd.DataFrame(rows)
+
+    print("\n=== Secondary Matching Summary (per model) ===")
+    print(summary_df.to_string(index=False))
+
+    summary_df.to_csv(os.path.join(save_dir, "secondary_matching_summary.csv"), index=False)
+    print(f"\nSecondary matching summary saved.")
+
+    # ------------------------------------------------------------------
+    # Step 5: Per-case detail dataframe
+    # ------------------------------------------------------------------
+    detail_df = df[["tumour_type", "_mdt_has_two_options", "_mdt_treatment_list"]].copy()
+    for col in model_cols:
+        if col in secondary_flags:
+            detail_df[f"secondary_only_{col}"] = secondary_flags[col]
+
+    # Count across models: how many models used secondary matching for this case
+    sec_cols = [f"secondary_only_{col}" for col in model_cols if col in secondary_flags]
+    detail_df["n_models_secondary"] = detail_df[sec_cols].sum(axis=1)
+
+    detail_df.to_csv(os.path.join(save_dir, "secondary_matching_per_case.csv"), index=False)
+    print(f"Per-case secondary matching detail saved.")
+
+    # ------------------------------------------------------------------
+    # Step 6: Subanalysis by tumour_type
+    # ------------------------------------------------------------------
+    print("\n=== Secondary Matching by Tumour Type ===")
+
+    # Average secondary match rate across all models, per tumour type
+    detail_df["any_secondary"] = detail_df[sec_cols].any(axis=1)
+
+    by_type = detail_df.groupby("tumour_type").agg(
+        n_cases          = ("any_secondary", "count"),
+        n_with_two_opts  = ("_mdt_has_two_options", "sum"),
+        n_any_secondary  = ("any_secondary", "sum"),
+    ).reset_index()
+    by_type["pct_secondary"] = (by_type["n_any_secondary"] / by_type["n_cases"] * 100).round(1)
+
+    print(by_type.to_string(index=False))
+    by_type.to_csv(os.path.join(save_dir, "secondary_matching_by_tumour_type.csv"), index=False)
+    print(f"By-tumour-type breakdown saved.")
+
+    # ------------------------------------------------------------------
+    # Step 7: What are the most/least common second-option categories?
+    # ------------------------------------------------------------------
+    if len(two_option_df) > 0:
+        print("\n=== Cases where secondary option was MOST used across models ===")
+        top_secondary = (
+            detail_df[detail_df["any_secondary"]]
+            .merge(two_option_df[["_mdt_second", "tumour_type"]], left_index=True, right_index=True,
+                   suffixes=("", "_two"))
+            ["_mdt_second"]
+            .value_counts()
+        )
+        print(top_secondary.to_string())
+
+    return summary_df, detail_df
+
+
+# =========================
 # Visualization functions
 # =========================
 def create_bar_plot(percentages: dict, title: str, save_path: str = None):
@@ -367,6 +584,8 @@ def analyze_jaccard_similarity(df: pd.DataFrame, save_dir="tables"):
     Expects columns:
         'Chunk Indices_RAG Full Corpora',
         'Chunk Indices_RAG Selected Corpora',
+        'Chunk Indices_tr_RAG Full Corpora',
+        'Chunk Indices_tr_RAG Selected Corpora'
         'Chunk Indices_rw_RAG Full Corpora',
         'Chunk Indices_rw_RAG Selected Corpora'
     """
@@ -377,6 +596,8 @@ def analyze_jaccard_similarity(df: pd.DataFrame, save_dir="tables"):
     index_cols = [
         'Chunk Indices_RAG Full Corpora',
         'Chunk Indices_RAG Selected Corpora',
+        'Chunk Indices_tr_RAG Full Corpora',
+        'Chunk Indices_tr_RAG Selected Corpora',
         'Chunk Indices_rw_RAG Full Corpora',
         'Chunk Indices_rw_RAG Selected Corpora'
     ]
@@ -398,10 +619,37 @@ def analyze_jaccard_similarity(df: pd.DataFrame, save_dir="tables"):
 
     # Compute pairwise Jaccard per case
     jaccard_cols = {
+        # RAG baseline vs everything
         'Jaccard_RAG_Full_vs_Selected': ('Chunk Indices_RAG Full Corpora', 'Chunk Indices_RAG Selected Corpora'),
+        'Jaccard_RAG_Full_vs_tr_Full': ('Chunk Indices_RAG Full Corpora', 'Chunk Indices_tr_RAG Full Corpora'),
+        'Jaccard_RAG_Full_vs_tr_Selected': ('Chunk Indices_RAG Full Corpora', 'Chunk Indices_tr_RAG Selected Corpora'),
         'Jaccard_RAG_Full_vs_rw_Full': ('Chunk Indices_RAG Full Corpora', 'Chunk Indices_rw_RAG Full Corpora'),
         'Jaccard_RAG_Full_vs_rw_Selected': ('Chunk Indices_RAG Full Corpora', 'Chunk Indices_rw_RAG Selected Corpora'),
-        'Jaccard_rw_Full_vs_rw_Selected': ('Chunk Indices_rw_RAG Full Corpora', 'Chunk Indices_rw_RAG Selected Corpora')
+
+        # RAG Selected vs translated and rewritten
+        'Jaccard_RAG_Selected_vs_tr_Full': ('Chunk Indices_RAG Selected Corpora', 'Chunk Indices_tr_RAG Full Corpora'),
+        'Jaccard_RAG_Selected_vs_tr_Selected': ('Chunk Indices_RAG Selected Corpora',
+                                                'Chunk Indices_tr_RAG Selected Corpora'),
+        'Jaccard_RAG_Selected_vs_rw_Full': ('Chunk Indices_RAG Selected Corpora', 'Chunk Indices_rw_RAG Full Corpora'),
+        'Jaccard_RAG_Selected_vs_rw_Selected': ('Chunk Indices_RAG Selected Corpora',
+                                                'Chunk Indices_rw_RAG Selected Corpora'),
+
+        # Translated Full vs translated selected and rewritten
+        'Jaccard_tr_Full_vs_tr_Selected': ('Chunk Indices_tr_RAG Full Corpora',
+                                           'Chunk Indices_tr_RAG Selected Corpora'),
+        'Jaccard_tr_Full_vs_rw_Full': ('Chunk Indices_tr_RAG Full Corpora', 'Chunk Indices_rw_RAG Full Corpora'),
+        'Jaccard_tr_Full_vs_rw_Selected': ('Chunk Indices_tr_RAG Full Corpora',
+                                           'Chunk Indices_rw_RAG Selected Corpora'),
+
+        # Translated Selected vs rewritten
+        'Jaccard_tr_Selected_vs_rw_Full': ('Chunk Indices_tr_RAG Selected Corpora',
+                                           'Chunk Indices_rw_RAG Full Corpora'),
+        'Jaccard_tr_Selected_vs_rw_Selected': ('Chunk Indices_tr_RAG Selected Corpora',
+                                               'Chunk Indices_rw_RAG Selected Corpora'),
+
+        # Rewritten Full vs Rewritten Selected
+        'Jaccard_rw_Full_vs_rw_Selected': ('Chunk Indices_rw_RAG Full Corpora',
+                                           'Chunk Indices_rw_RAG Selected Corpora'),
     }
 
     for jcol, (col1, col2) in jaccard_cols.items():
@@ -414,7 +662,7 @@ def analyze_jaccard_similarity(df: pd.DataFrame, save_dir="tables"):
 
     # Compute average pairwise Jaccard similarities (4x4 matrix)
     methods = {name: df[col] for name, col in zip(
-        ['RAG_Full', 'RAG_Selected', 'rw_RAG_Full', 'rw_RAG_Selected'],
+        ['RAG_Full', 'RAG_Selected', 'tr_RAG_Full', 'tr_RAG_Selected', 'rw_RAG_Full', 'rw_RAG_Selected'],
         index_cols
     )}
 
@@ -452,6 +700,8 @@ def analyze_charts_retrieved(df: pd.DataFrame, save_dir="tables"):
     Columns expected:
         - 'Charts N_RAG Full Corpora'
         - 'Charts N_RAG Selected Corpora'
+        - 'Charts N_tr_RAG Full Corpora'
+        - 'Charts N_tr_RAG Selected Corpora'
         - 'Charts N_rw_RAG Full Corpora'
         - 'Charts N_rw_RAG Selected Corpora'
 
@@ -464,8 +714,10 @@ def analyze_charts_retrieved(df: pd.DataFrame, save_dir="tables"):
     columns_to_analyze = [
         'Charts N_RAG Full Corpora',
         'Charts N_RAG Selected Corpora',
+        'Charts N_tr_RAG Full Corpora',
+        'Charts N_tr_RAG Selected Corpora',
         'Charts N_rw_RAG Full Corpora',
-        'Charts N_rw_RAG Selected Corpora'
+        'Charts N_rw_RAG Selected Corpora',
     ]
 
     # Convert treatment column lists to strings to allow groupby
@@ -501,6 +753,7 @@ def analyze_charts_retrieved(df: pd.DataFrame, save_dir="tables"):
 # =========================
 if __name__ == "__main__":
     df = load_data(DATA_PATH)
+
 
     # Overall percentages
     percentages = calculate_correct_percentages(df, MODEL_COLS)
@@ -549,6 +802,13 @@ if __name__ == "__main__":
 
     # Extreme correctness analysis
     always_wrong, mostly_right_90, always_right_100 = analyze_correctness_extremes(df, MODEL_COLS, save_dir=TABLE_DIR)
+
+    input('###########START#########')
+
+    # Secondary matching analysis
+    secondary_results = analyze_secondary_matching(df, MODEL_COLS, save_dir=TABLE_DIR)
+
+    input('###########FINE#########')
 
     # Sub-analyses
     sub_analysis_by_column(df, "tumour_type", MODEL_COLS, save_dir=IMG_DIR)
