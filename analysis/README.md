@@ -37,6 +37,15 @@ Performs the main evaluation of frameworks' recommendations against the anonymiz
 
 ---
 
+### 3. `sensitivity_analysis_thresholds.py`
+Sensitivity analysis for the 'Mostly Wrong / Mostly Correct / Fully Concordant' case classification thresholds used in the Framework Consistency Analysis (main manuscript).
+The original thresholds (≤30% / >90% / 100%) were selected based on clinical reasoning to identify cases at the extremes of the cross-framework performance distribution. This script verifies that the key finding — 4 universally challenging cases failing across virtually all configurations — is robust to reasonable threshold variations.
+
+- 'Mostly Wrong' thresholds tested: ≤20%, ≤25%, ≤30%, ≤35%, ≤40%
+- 'Mostly Correct' thresholds tested: >80%, >85%, >90%, >95%
+- 'Fully Concordant': 100% (threshold-independent by definition)
+
+**Output**: printed to console only — no files saved.
 
 ## Usage
 
