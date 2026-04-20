@@ -34,7 +34,12 @@ print("Ensure any guideline PDFs are uploaded to the Assistant if you want them 
 # -----------------------------
 # User configuration
 # -----------------------------
-use_rewritten = input("Use rewritten case? (y/n): ").strip().lower() == "y"
+use_rewritten = input("Use rewritten or translated only case? (y/n): ").strip().lower() == "y"
+
+if use_rewritten:
+    use_translated_only = input("Do you want to use the translated (tr) only case or the rewritten (rw) one? (tr/rw): ").strip().lower() == "tr"
+else:
+    use_translated_only = False
 
 # -----------------------------
 # Load original patient case
@@ -47,7 +52,23 @@ with open(case_txt_path, 'r', encoding='utf-8') as f:
 # -----------------------------
 # If user wants rewritten, call rewrite.py
 # -----------------------------
-if use_rewritten:
+if use_translated_only:
+    # Temporarily add current folder to sys.path to import rewrite.py
+    sys.path.append(current_dir)
+    try:
+        from rewrite import translate_case_from_txt
+        translate_available = True
+        case_text = translate_case_from_txt(case_txt_path)
+        print("=== Using translated only case ===\n")
+    except ImportError:
+        translate_available = False
+        print("Translate function not found. Using original case.\n")
+    finally:
+        # Optional: remove current folder from sys.path after import
+        if current_dir in sys.path:
+            sys.path.remove(current_dir)
+
+elif use_rewritten:
     # Temporarily add current folder to sys.path to import rewrite.py
     sys.path.append(current_dir)
     try:

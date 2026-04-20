@@ -47,6 +47,32 @@ The original thresholds (≤30% / >90% / 100%) were selected based on clinical r
 
 **Output**: printed to console only — no files saved.
 
+### 4. `analyze_demographic_performance.py`
+Exploratory analysis of concordance performance by demographic variables (age and sex) across all 16 RAG framework configurations, addressing the equity dimension raised in peer review.
+
+- **Sex comparison**: mean concordance by sex (Mann-Whitney U test)
+- **Age correlation**: Spearman correlation between age and mean concordance (all configurations and optimal configuration only)
+- **Age tertile analysis**: concordance by age group (Kruskal-Wallis test)
+- **Demographic distribution by tumour type**: age and sex distributions across cancer types (Kruskal-Wallis and Chi-square tests)
+
+**Outputs:**
+
+- **Tables**: tables/demographic_performance_summary.csv, tables/demographic_concordance_by_sex.csv, tables/demographic_age_correlation.csv, tables/demographic_by_tumour_type.csv
+- **Figures**: img/demographic_performance_figure.png (3-panel: concordance by sex, age vs concordance scatter, concordance by age tertile)
+
+
+### 5. `analyze_retrieval_quality.py`
+Retrieval quality analysis across RAG configurations, quantifying the actionability of retrieved guideline chunks and retrieval similarity scores across full and curated corpus configurations.
+
+- **Actionability analysis**: proportion of non-actionable chunks (epidemiology, prevention, reference lists) among top-5 retrieved chunks per case across 6 RAG configurations
+- **Retrieval similarity scores**: mean and minimum cosine similarity of retrieved chunks as a proxy for retrieval confidence
+- **Tumour type subgroup analysis**: non-actionable chunk rates and similarity scores by cancer type (full corpus configurations only)
+
+**Outputs:**
+
+- **Tables**: tables/retrieval_quality_summary.csv, tables/retrieval_quality_by_tumour_type.csv
+- **Figures**: img/retrieval_quality_figure.png (3-panel: retrieval noise per configuration, mean similarity scores, per-case distribution for full corpus configurations)
+
 ## Usage
 
 1. Ensure the anonymized dataset is placed in:  

@@ -36,7 +36,7 @@ Other pipelines (`framework_1_simple_request.py`, `framework_2_chatgpt_assistant
 
 This framework allows the user to run a **single-request prompt** on a patient case.  
 - User selects the model at runtime.  
-- Case can be original or rewritten.  
+- Case can be original, rewritten or translated only.  
 - Output is a single response from ChatGPT using the provided prompt configuration.  
 
 ---
@@ -45,7 +45,7 @@ This framework allows the user to run a **single-request prompt** on a patient c
 
 Runs a patient case through a **pre-configured ChatGPT Assistant**.  
 - Uses the assistant’s internal model selection.  
-- Optionally works on rewritten cases.  
+- Optionally works on rewritten and translated only cases.  
 - Guidelines are retrieved by the assistant; PDFs must be available in its environment.
 - **Remember to insert your Assistant ID** in `prompts/chatgpt.py`:
 
@@ -65,7 +65,7 @@ Runs a **custom RAG pipeline** on a patient case:
 - Constructs a prompt combining the case and retrieved chunks.  
 - Calls ChatGPT for RAG inference.
 
-Supports optional use of **rewritten cases** and **user-selected guideline corpora** (dummy S3 or real digested guidelines by organ/system).
+Supports optional use of **rewritten** or **translated only cases** and **user-selected guideline corpora** (dummy S3 or real digested guidelines by organ/system).
 
 
 ---
