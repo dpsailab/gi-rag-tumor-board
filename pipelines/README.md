@@ -67,6 +67,15 @@ Runs a **custom RAG pipeline** on a patient case:
 
 Supports optional use of **rewritten** or **translated only cases** and **user-selected guideline corpora** (dummy S3 or real digested guidelines by organ/system).
 
+## Note on Import Strategy
+
+All pipeline scripts use `sys.path.append` to resolve imports from parallel 
+folders (e.g., `prompts/`, `data/dummy_corpora/`) rather than a formal package 
+structure with `pyproject.toml`. This is a deliberate design choice to keep the 
+repository self-contained and executable step-by-step without installation, 
+making it accessible to users who want to run individual pipelines interactively. 
+For production use or integration into larger systems, we recommend refactoring 
+into a proper Python package with explicit imports.
 
 ---
 
