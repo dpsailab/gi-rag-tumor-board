@@ -55,7 +55,7 @@ import seaborn as sns
 # Configuration
 # =========================
 
-DATA_PATH = "../data/anonymized_dataset/Tumorboard_ChatGPT_anomyzed_dataset.csv"
+DATA_PATH = "../data/anonymized_dataset/Tumorboard_ChatGPT_anonymized_dataset.csv"
 TABLE_DIR = "tables"
 IMG_DIR   = "img"
 
@@ -293,8 +293,6 @@ if __name__ == "__main__":
 
     df = load_data(DATA_PATH)
 
-    input(df.columns)
-
     # Convert metric columns to numeric (stored as strings in some Excel exports)
     all_metric_cols = []
     for config in RAG_CONFIGS:
@@ -316,4 +314,3 @@ if __name__ == "__main__":
     # 3. Figure
     plot_retrieval_quality(df, summary)
 
-    print("\nDone.")

@@ -11,7 +11,7 @@ Due to data protection and ethical constraints, the original clinical cases and 
 
 The dataset is provided as a single CSV file:
 ```bash
-Tumorboard_ChatGPT_anomyzed_dataset.csv
+Tumorboard_ChatGPT_anonymized_dataset.csv
 ```
 
 

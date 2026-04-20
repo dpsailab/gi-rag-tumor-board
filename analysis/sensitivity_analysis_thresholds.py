@@ -27,7 +27,7 @@ import pandas as pd
 # Configuration
 # =========================
 
-DATA_PATH = "../data/anonymized_dataset/Tumorboard_ChatGPT_anomyzed_dataset.csv"
+DATA_PATH = "../data/anonymized_dataset/Tumorboard_ChatGPT_anonymized_dataset.csv"
 
 MODEL_COLS = [
     'No retrieval_4o-mini', 'No retrieval_4o',

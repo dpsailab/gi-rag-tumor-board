@@ -196,7 +196,7 @@ if __name__ == "__main__":
     except ValueError as e:
         if "shapes" in str(e) and "not aligned" in str(e):
             print("ERROR: Embedding dimension mismatch detected.")
-            print("RUN the corpora_embeddings.py script in the folder 'guidelines processing' first!")
+            print("RUN the corpora_embeddings.py script in the folder 'guidelines_processing' first!")
             sys.exit(1)
         else:
             raise

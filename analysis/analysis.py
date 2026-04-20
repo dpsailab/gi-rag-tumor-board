@@ -15,7 +15,7 @@ import ast
 # =========================
 # Paths & global settings
 # =========================
-DATA_PATH = "../data/anonymized_dataset/Tumorboard_ChatGPT_anomyzed_dataset.csv"
+DATA_PATH = "../data/anonymized_dataset/Tumorboard_ChatGPT_anonymized_dataset.csv"
 TABLE_DIR = "tables"
 IMG_DIR = "img"
 

@@ -70,7 +70,7 @@ def presentation_status(df: pd.DataFrame, group_col: str = None) -> pd.DataFrame
 
 
 def main():
-    df = load_data("../data/anonymized_dataset/Tumorboard_ChatGPT_anomyzed_dataset.csv")
+    df = load_data("../data/anonymized_dataset/Tumorboard_ChatGPT_anonymized_dataset.csv")
 
     # Overall stats
     age_overall = age_statistics(df)

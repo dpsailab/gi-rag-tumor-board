@@ -77,7 +77,7 @@ Retrieval quality analysis across RAG configurations, quantifying the actionabil
 
 1. Ensure the anonymized dataset is placed in:  
 ```go
-../data/anonymized_dataset/Tumorboard_ChatGPT_anomyzed_dataset.csv
+../data/anonymized_dataset/Tumorboard_ChatGPT_anonymized_dataset.csv
 ```
 2. Run the scripts:  
 ```bash
